@@ -37,7 +37,9 @@ public final class PolicyEntry<KeyEvent> extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.policy_entry);
         
+        // Action dropdown view
         mActionSpin = (Spinner) findViewById(R.id.entrySpinAction);
+        // IP address input
         mIpEditTxt = (EditText) findViewById(R.id.entryTxtIP);
         mIpEditTxt.setOnKeyListener(new OnKeyListener() {
             public boolean onKey(View v, int keyCode, android.view.KeyEvent event) {

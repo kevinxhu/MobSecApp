@@ -3,8 +3,10 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent" android:orientation="vertical">
     <TextView android:layout_width="fill_parent" android:id="@+id/policyTitle" android:layout_height="30dip" android:text="@string/policyEntry"></TextView>
+    <TextView android:text="@string/policyName" android:layout_height="wrap_content" android:layout_width="wrap_content" android:id="@+id/textView1"></TextView>
+    <EditText android:layout_height="40dip" android:layout_width="180dip" android:text="@string/defTxtString" android:id="@+id/txtPolicyName"></EditText>
     <TextView android:layout_width="wrap_content" android:id="@+id/entryStdIP" android:layout_height="wrap_content" android:text="@string/txtIpAddr"></TextView>
-    <EditText android:layout_width="180dip" android:text="EditText" android:id="@+id/entryTxtIP" android:layout_height="40dip"></EditText>
+    <EditText android:layout_width="180dip" android:id="@+id/entryTxtIP" android:layout_height="40dip" android:text="@string/defTxtString" android:maxLength="15"></EditText>
     <TextView android:id="@+id/entryStdAction" android:layout_height="wrap_content" android:text="@string/txtStdAction" android:layout_width="50dip"></TextView>
-    <Spinner android:layout_height="wrap_content" android:layout_width="180dip" android:prompt = "@string/action_prompt" android:id="@+id/entrySpinAction"></Spinner>
+    <Spinner android:layout_height="wrap_content" android:layout_width="180dip" android:id="@+id/entrySpinAction" android:prompt="@string/action_prompt"></Spinner>
 </LinearLayout>
