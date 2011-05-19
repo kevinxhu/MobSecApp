@@ -1,7 +1,7 @@
 package com.android.mobsec;
 
 import android.app.Activity;
-import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -9,8 +9,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnKeyListener;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.EditText;
 import android.view.KeyEvent;
@@ -25,9 +23,10 @@ public final class PolicyEntry<KeyEvent> extends Activity {
     
     private Spinner mActionSpin;
     private EditText mIpEditTxt;
+    private EditText mNameEditTxt;
     
     protected ArrayAdapter<CharSequence> mAdapter;
-	
+    
 	 /**
      * Called when the activity is first created. Responsible for initializing the UI.
      */
@@ -37,6 +36,8 @@ public final class PolicyEntry<KeyEvent> extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.policy_entry);
         
+        //name
+        mNameEditTxt = (EditText) findViewById(R.id.txtPolicyName);
         // Action dropdown view
         mActionSpin = (Spinner) findViewById(R.id.entrySpinAction);
         // IP address input
@@ -102,7 +103,9 @@ public final class PolicyEntry<KeyEvent> extends Activity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
         case MENU_ITEM_SAVE:
-        	// save policy entry to data base
+        	// save policy entry to data base 	 
+        	setResult(RESULT_OK, this.getIntent());
+        	finish();
         	break;
         case MENU_ITEM_DISCARD:
         	// close this activity

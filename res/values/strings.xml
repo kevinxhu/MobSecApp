@@ -16,5 +16,6 @@
     </string-array>
         <string name="defTxtString"></string>
         <string name="policyName">Policy Name</string>
+        <string name="polLst">polLst</string>
 
 </resources>

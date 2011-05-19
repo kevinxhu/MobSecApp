@@ -1,25 +1,37 @@
 package com.android.mobsec;
 
 import com.android.mobsec.PolicyEntry;
+
 import android.app.ListActivity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
-import android.widget.ListView;
 
 public class ModSec extends ListActivity {
     /** Called when the activity is first created. */
     // Menu item ids
     public static final int MENU_ITEM_DELETE = Menu.FIRST;
     public static final int MENU_ITEM_INSERT = Menu.FIRST + 1;	
-	
+    
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+    }
+    
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+    
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode,
+            Intent data) {
+    	super.onActivityResult(requestCode, resultCode, data);
+    	if(resultCode == RESULT_OK) {
+    		// update main UI list
+    		data.getData();
+    	}
     }
     
     @Override
@@ -40,12 +52,12 @@ public class ModSec extends ListActivity {
         case MENU_ITEM_INSERT:
             // Launch activity to insert a new item
         	 try {
-        		 startActivity(new Intent(this, PolicyEntry.class)); 
+        		 startActivityForResult (new Intent(Intent.ACTION_INSERT, getIntent().getData(), this, PolicyEntry.class), 1); 
         	 }
         	 catch (android.content.ActivityNotFoundException e) {
         		  e.getClass();
         	 }
-            return true;
+            break;
         }
         return super.onOptionsItemSelected(item);
     }
