@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="hello">Hello World, ModSec!</string>
-    <string name="app_name">ModSec</string>
+    <string name="app_name">MobSec</string>
     <string name="addPolicy">Add Polycy...</string>
     <string name="menu_add">Add Policy</string>
     <string name="policyEntry">Policy Entry</string>

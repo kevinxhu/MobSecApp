@@ -3,7 +3,10 @@ package com.android.mobsec;
 import com.android.mobsec.policyElem.Elements;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -113,7 +116,6 @@ public final class PolicyEntry<KeyEvent> extends Activity {
                 // Make sure we are at the one and only row in the cursor.
                 mCursor.moveToFirst();
                 
-                int count = mCursor.getColumnCount();
                 String elem = mCursor.getString(COLUMN_INDEX_ELEMENT);
                 mNameEditTxt.setText(elem);
                 elem = mCursor.getString(COLUMN_INDEX_ELEMENT + 1);
@@ -142,6 +144,13 @@ public final class PolicyEntry<KeyEvent> extends Activity {
         switch (item.getItemId()) {
         case MENU_ITEM_SAVE:
         	// save policy entry to data base 
+        	String textName = mNameEditTxt.getText().toString();
+        	String textIpAddr = mIpEditTxt.getText().toString();
+        	
+        	if(textName.length() == 0 || textIpAddr.length() == 0) {
+        		showAlertDialog(new String("Name and IP Address can not be empty!"));
+        		return false;
+        	}
         	final Intent intent = getIntent();
             try {
             	mUri = getContentResolver().insert(intent.getData(), null);
@@ -154,15 +163,11 @@ public final class PolicyEntry<KeyEvent> extends Activity {
                 finish();
                 return false;
             }
-        	
-            String text = mNameEditTxt.getText().toString();
-            
+        	  
             ContentValues values = new ContentValues();
             values.put(Elements.MODIFIED_DATE, System.currentTimeMillis());
-            values.put(Elements.NAME, text);
-            
-            text = mIpEditTxt.getText().toString();
-            values.put(Elements.IPADDR, text);
+            values.put(Elements.NAME, textName);
+            values.put(Elements.IPADDR, textIpAddr);
             // Commit all of our changes to persistent storage. When the update completes
             // the content provider will notify the cursor of the change, which will
             // cause the UI to be updated.
@@ -179,4 +184,17 @@ public final class PolicyEntry<KeyEvent> extends Activity {
         }
         return super.onOptionsItemSelected(item);
     }
+    
+    private void showAlertDialog(String message) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(message)
+               .setCancelable(false)
+               .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                   public void onClick(DialogInterface dialog, int id) {
+                   }
+               });
+        AlertDialog alert = builder.create();
+        alert.show();
+      }
+
 }

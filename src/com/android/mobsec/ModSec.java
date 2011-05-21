@@ -87,7 +87,7 @@ public class ModSec extends ListActivity {
                 .setIcon(android.R.drawable.ic_menu_add);
         return true;
     }
-    
+        
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -109,7 +109,6 @@ public class ModSec extends ListActivity {
         Uri uri = ContentUris.withAppendedId(getIntent().getData(), id);
         
 	   	try {
-			//startActivityForResult (new Intent(Intent.ACTION_EDIT, uri, this, PolicyEntry.class), 1); 
 	   		startActivityForResult (new Intent(Intent.ACTION_EDIT, uri, this, PolicyEntry.class), 1); 
 	   	}
 		catch (android.content.ActivityNotFoundException e) {
@@ -136,6 +135,28 @@ public class ModSec extends ListActivity {
         menu.setHeaderTitle(cursor.getString(COLUMN_INDEX_TITLE));
 
         // Add a menu item to delete the note
-        menu.add(0, MENU_ITEM_DELETE, 0, R.string.menu_delete);
+        menu.add(0, MENU_ITEM_DELETE, 1, R.string.menu_delete)
+        .setShortcut('4', 'd')
+        .setIcon(android.R.drawable.ic_menu_delete);
+    }
+    
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        AdapterView.AdapterContextMenuInfo info;
+        try {
+             info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        } catch (ClassCastException e) {
+            return false;
+        }
+
+        switch (item.getItemId()) {
+            case MENU_ITEM_DELETE: {
+                // Delete the note that the context menu is for
+                Uri noteUri = ContentUris.withAppendedId(getIntent().getData(), info.id);
+                getContentResolver().delete(noteUri, null, null);
+                return true;
+            }
+        }
+        return false;
     }
 }
