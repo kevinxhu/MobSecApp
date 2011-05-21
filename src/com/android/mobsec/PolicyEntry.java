@@ -1,6 +1,11 @@
 package com.android.mobsec;
 
+import com.android.mobsec.policyElem.Elements;
+
 import android.app.Activity;
+import android.content.ContentValues;
+import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -21,9 +26,23 @@ public final class PolicyEntry<KeyEvent> extends Activity {
     public static final int MENU_ITEM_SAVE = Menu.FIRST;
     public static final int MENU_ITEM_DISCARD = Menu.FIRST + 1;	
     
+    /**
+     * Standard projection for the interesting columns of a normal note.
+     */
+    private static final String[] PROJECTION = new String[] {
+            Elements._ID, // 0
+            Elements.NAME, // 1
+            Elements.IPADDR, //2
+    };    
+    /** The index of the note column */
+    private static final int COLUMN_INDEX_ELEMENT = 1;
+    
     private Spinner mActionSpin;
     private EditText mIpEditTxt;
     private EditText mNameEditTxt;
+    
+    private Uri mUri;
+    private Cursor mCursor;
     
     protected ArrayAdapter<CharSequence> mAdapter;
     
@@ -35,6 +54,9 @@ public final class PolicyEntry<KeyEvent> extends Activity {
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.policy_entry);
+        
+        final Intent intent = getIntent();
+        final String action = intent.getAction();
         
         //name
         mNameEditTxt = (EditText) findViewById(R.id.txtPolicyName);
@@ -82,6 +104,22 @@ public final class PolicyEntry<KeyEvent> extends Activity {
                 this, R.array.actionArray, android.R.layout.simple_spinner_dropdown_item);
        
         mActionSpin.setAdapter(this.mAdapter);
+        
+        if (Intent.ACTION_EDIT.equals(action)) {
+        	mUri = intent.getData();
+            // Get the note!
+            mCursor = managedQuery(mUri, PROJECTION, null, null, null);
+            if (mCursor != null) {
+                // Make sure we are at the one and only row in the cursor.
+                mCursor.moveToFirst();
+                
+                int count = mCursor.getColumnCount();
+                String elem = mCursor.getString(COLUMN_INDEX_ELEMENT);
+                mNameEditTxt.setText(elem);
+                elem = mCursor.getString(COLUMN_INDEX_ELEMENT + 1);
+                mIpEditTxt.setText(elem);
+            }
+        }
     }
     
     @Override
@@ -103,7 +141,33 @@ public final class PolicyEntry<KeyEvent> extends Activity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
         case MENU_ITEM_SAVE:
-        	// save policy entry to data base 	 
+        	// save policy entry to data base 
+        	final Intent intent = getIntent();
+            try {
+            	mUri = getContentResolver().insert(intent.getData(), null);
+            }
+            catch (Exception e) {
+            	e.getCause();
+            }
+            if (mUri == null) {
+                setResult(RESULT_CANCELED);
+                finish();
+                return false;
+            }
+        	
+            String text = mNameEditTxt.getText().toString();
+            
+            ContentValues values = new ContentValues();
+            values.put(Elements.MODIFIED_DATE, System.currentTimeMillis());
+            values.put(Elements.NAME, text);
+            
+            text = mIpEditTxt.getText().toString();
+            values.put(Elements.IPADDR, text);
+            // Commit all of our changes to persistent storage. When the update completes
+            // the content provider will notify the cursor of the change, which will
+            // cause the UI to be updated.
+            getContentResolver().update(mUri, values, null, null);
+            
         	setResult(RESULT_OK, this.getIntent());
         	finish();
         	break;

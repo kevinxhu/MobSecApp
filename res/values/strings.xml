@@ -9,6 +9,7 @@
     <string name="txtStdAction">Action</string>
     <string name="menu_save">Save</string>
     <string name="menu_discard">Discard</string>
+     <string name="menu_delete">Delete</string>
     <string name="action_prompt">Action</string>
     <string-array name="actionArray">
         <item>Allow</item>
