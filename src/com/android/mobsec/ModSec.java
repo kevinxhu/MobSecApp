@@ -1,14 +1,17 @@
 package com.android.mobsec;
 
 import com.android.mobsec.PolicyEntry;
+import com.android.mobsec.policyPref;
 import com.android.mobsec.policyElem.Elements;
 
 import android.app.ListActivity;
 import android.content.ContentUris;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
@@ -24,6 +27,7 @@ public class ModSec extends ListActivity {
     // Menu item ids
     public static final int MENU_ITEM_DELETE = Menu.FIRST;
     public static final int MENU_ITEM_INSERT = Menu.FIRST + 1;	
+    public static final int MENU_ITEM_PREFERENCE = Menu.FIRST + 2;	
     
     /**
      * Standard projection for the interesting columns of a normal note.
@@ -77,14 +81,33 @@ public class ModSec extends ListActivity {
     }
     
     @Override
+    public boolean onPrepareOptionsMenu (Menu menu) {
+    	super.onPrepareOptionsMenu(menu);
+    	
+    	
+    	return true;
+    }
+    
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
+        String strMode;
+        
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        strMode = prefs.getString("list_preference", new String(""));
         
         // This is our one standard application action -- inserting a
         // new note into the list.
         menu.add(0, MENU_ITEM_INSERT, 0, R.string.menu_add)
                 .setShortcut('3', 'a')
                 .setIcon(android.R.drawable.ic_menu_add);
+        if(strMode.equalsIgnoreCase(new String("remote"))) {
+        	menu.setGroupEnabled(0, false);
+        }
+        menu.add(1, MENU_ITEM_PREFERENCE, 1, R.string.menu_pref)
+        .setShortcut('4', 'p')
+        .setIcon(android.R.drawable.ic_menu_preferences);
+
         return true;
     }
         
@@ -100,6 +123,14 @@ public class ModSec extends ListActivity {
         		  e.getClass();
         	 }
             break;
+        case MENU_ITEM_PREFERENCE:
+        	try {
+        		startActivity (new Intent(this, policyPref.class));
+        	}
+       	 	catch (android.content.ActivityNotFoundException e) {
+       	 		e.getClass();
+       	 	}
+        	break;
         }
         return super.onOptionsItemSelected(item);
     }

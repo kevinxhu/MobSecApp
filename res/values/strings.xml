@@ -8,9 +8,26 @@
     <string name="txtIpAddr">IP Address</string>
     <string name="txtStdAction">Action</string>
     <string name="menu_save">Save</string>
+    <string name="menu_pref">Preference</string>
     <string name="menu_discard">Discard</string>
      <string name="menu_delete">Delete</string>
     <string name="action_prompt">Action</string>
+    
+    <string name="inline_preferences">Preferences</string>
+    <string name="title_list_preference">Policy Mode</string>
+    <string name="summary_list_preference">Choose where policy come from</string>
+    <string name="dialog_title_list_preference">Policy Source</string>
+    
+    <string-array name="entries_list_preference">
+        <item>Local</item>
+        <item>Backend</item>
+    </string-array>
+    
+    <string-array name="entryvalues_list_preference">
+        <item>local</item>
+        <item>remote</item>
+    </string-array>
+    
     <string-array name="actionArray">
         <item>Allow</item>
         <item>Deny</item>
@@ -18,5 +35,7 @@
         <string name="defTxtString"></string>
         <string name="policyName">Policy Name</string>
         <string name="polLst">polLst</string>
+
+
 
 </resources>

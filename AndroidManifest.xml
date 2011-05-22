@@ -17,6 +17,7 @@
             </intent-filter>
         </activity>
         <activity android:name="PolicyEntry"></activity>
+        <activity android:name="policyPref"></activity>
 
     </application>
 </manifest>
