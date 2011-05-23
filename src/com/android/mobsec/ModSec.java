@@ -27,7 +27,9 @@ public class ModSec extends ListActivity {
     // Menu item ids
     public static final int MENU_ITEM_DELETE = Menu.FIRST;
     public static final int MENU_ITEM_INSERT = Menu.FIRST + 1;	
-    public static final int MENU_ITEM_PREFERENCE = Menu.FIRST + 2;	
+    public static final int MENU_ITEM_PREFERENCE = Menu.FIRST + 2;
+    
+    private static boolean mPolSyncMode = true; // true for local mode and false for remote mode
     
     /**
      * Standard projection for the interesting columns of a normal note.
@@ -68,6 +70,26 @@ public class ModSec extends ListActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        String strMode;
+        
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        strMode = prefs.getString("list_preference", new String(""));
+        if(strMode.equalsIgnoreCase(new String("remote"))) {
+        	mPolSyncMode = false;
+            setListAdapter(null);
+        }
+        else {
+        	mPolSyncMode = true;
+            // Perform a managed query. The Activity will handle closing and requerying the cursor
+            // when needed.
+            Cursor cursor = managedQuery(getIntent().getData(), PROJECTION, null, null,
+                    Elements.DEFAULT_SORT_ORDER);
+            
+            // Used to map notes entries from the database to views
+            SimpleCursorAdapter adapter = new SimpleCursorAdapter(this, R.layout.policy_list, cursor,
+                    new String[] { Elements.NAME }, new int[] { R.id.policyList });
+            setListAdapter(adapter);
+        }
     }
     
     @Override
@@ -79,36 +101,32 @@ public class ModSec extends ListActivity {
     		data.getData();
     	}
     }
-    
-    @Override
-    public boolean onPrepareOptionsMenu (Menu menu) {
-    	super.onPrepareOptionsMenu(menu);
-    	
-    	
-    	return true;
-    }
-    
+        
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        String strMode;
-        
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-        strMode = prefs.getString("list_preference", new String(""));
-        
+
         // This is our one standard application action -- inserting a
         // new note into the list.
         menu.add(0, MENU_ITEM_INSERT, 0, R.string.menu_add)
                 .setShortcut('3', 'a')
                 .setIcon(android.R.drawable.ic_menu_add);
-        if(strMode.equalsIgnoreCase(new String("remote"))) {
-        	menu.setGroupEnabled(0, false);
-        }
         menu.add(1, MENU_ITEM_PREFERENCE, 1, R.string.menu_pref)
         .setShortcut('4', 'p')
         .setIcon(android.R.drawable.ic_menu_preferences);
 
         return true;
+    }
+    
+    @Override
+    public boolean onPrepareOptionsMenu (Menu menu) 
+    {
+    	super.onPrepareOptionsMenu(menu);
+        
+        if(mPolSyncMode == false) {
+        	menu.setGroupEnabled(0, false);
+        }
+    	return true;
     }
         
     @Override
