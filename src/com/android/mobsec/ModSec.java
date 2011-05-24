@@ -1,5 +1,12 @@
 package com.android.mobsec;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+
+import android.os.Environment;
 import com.android.mobsec.PolicyEntry;
 import com.android.mobsec.policyPref;
 import com.android.mobsec.policyElem.Elements;
@@ -38,6 +45,11 @@ public class ModSec extends ListActivity {
             Elements._ID, // 0
             Elements.NAME, // 1
     };   
+    private static final String[] PROJECTION1 = new String[] {
+        Elements._ID, // 0
+        Elements.NAME, // 1
+        Elements.IPADDR, //2
+    };   
     
     /** The index of the title column */
     private static final int COLUMN_INDEX_TITLE = 1;
@@ -65,6 +77,62 @@ public class ModSec extends ListActivity {
         SimpleCursorAdapter adapter = new SimpleCursorAdapter(this, R.layout.policy_list, cursor,
                 new String[] { Elements.NAME }, new int[] { R.id.policyList });
         setListAdapter(adapter);
+    }
+    
+    private void onSaveFile() {
+		OutputStream os;
+		File path = getExternalFilesDir(null);
+		File file = new File(path, "mobSec.txt");
+		
+		if(file.exists() == false) {
+			try {
+				file.createNewFile();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return;
+			}
+		}
+			
+		try {
+			os = new FileOutputStream(file);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return;
+		}
+        Cursor cursor = managedQuery(getIntent().getData(), PROJECTION1, null, null,
+                Elements.DEFAULT_SORT_ORDER);
+        String name;
+        String ipAddr;
+		String strSpa = new String(" ");
+		String strEnter = new String("\n");
+		if(cursor.moveToFirst() == false) {
+			return;
+		}
+        while(cursor != null) {
+        	name = cursor.getString(COLUMN_INDEX_TITLE);
+        	ipAddr = cursor.getString(COLUMN_INDEX_TITLE + 1);
+        
+			try {
+				os.write(name.getBytes());
+				os.write(strSpa.getBytes());
+				os.write(ipAddr.getBytes());
+				os.write(strEnter.getBytes());
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			if(cursor.moveToNext() == false) {
+				break;
+			}
+        }
+		try {
+			os.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}    	
     }
     
     @Override
@@ -99,6 +167,7 @@ public class ModSec extends ListActivity {
     	if(resultCode == RESULT_OK) {
     		// update main UI list
     		data.getData();
+    		onSaveFile();
     	}
     }
         
@@ -203,6 +272,7 @@ public class ModSec extends ListActivity {
                 // Delete the note that the context menu is for
                 Uri noteUri = ContentUris.withAppendedId(getIntent().getData(), info.id);
                 getContentResolver().delete(noteUri, null, null);
+                onSaveFile();
                 return true;
             }
         }
