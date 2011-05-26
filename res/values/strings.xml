@@ -35,6 +35,8 @@
         <string name="defTxtString"></string>
         <string name="policyName">Policy Name</string>
         <string name="polLst">polLst</string>
+        <string name="entryTxtMask">Network Mask</string>
+        <string name="entryStdMask">Network Mask</string>
 
 
 

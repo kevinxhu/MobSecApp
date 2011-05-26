@@ -41,16 +41,22 @@ public final class policyElem {
         public static final String DEFAULT_SORT_ORDER = "modified DESC";
 
         /**
-         * The title of the note
+         * The name of the policy
          * <P>Type: TEXT</P>
          */
         public static final String NAME = "name";
 
         /**
-         * The note itself
+         * The IP address
          * <P>Type: TEXT</P>
          */
         public static final String IPADDR = "ipAddr";
+        
+        /**
+         * The network mask
+         * <P>Type: TEXT</P>
+         */
+        public static final String NETMASK = "netMask";
 
         /**
          * The timestamp for when the note was created

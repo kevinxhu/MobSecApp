@@ -36,6 +36,7 @@ public final class PolicyEntry<KeyEvent> extends Activity {
             Elements._ID, // 0
             Elements.NAME, // 1
             Elements.IPADDR, //2
+            Elements.NETMASK, //3
     };    
     /** The index of the note column */
     private static final int COLUMN_INDEX_ELEMENT = 1;
@@ -43,6 +44,7 @@ public final class PolicyEntry<KeyEvent> extends Activity {
     private Spinner mActionSpin;
     private EditText mIpEditTxt;
     private EditText mNameEditTxt;
+    private EditText mNetMaskEditTxt;
     
     private Uri mUri;
     private Cursor mCursor;
@@ -67,6 +69,7 @@ public final class PolicyEntry<KeyEvent> extends Activity {
         mActionSpin = (Spinner) findViewById(R.id.entrySpinAction);
         // IP address input
         mIpEditTxt = (EditText) findViewById(R.id.entryTxtIP);
+
         mIpEditTxt.setOnKeyListener(new OnKeyListener() {
             public boolean onKey(View v, int keyCode, android.view.KeyEvent event) {
                 // If the event is a key-down event on the "enter" button
@@ -102,7 +105,43 @@ public final class PolicyEntry<KeyEvent> extends Activity {
                 return false;
             }
         });
+        mNetMaskEditTxt = (EditText) findViewById(R.id.entryTxtMask);
+        mNetMaskEditTxt.setOnKeyListener(new OnKeyListener() {
+            public boolean onKey(View v, int keyCode, android.view.KeyEvent event) {
+                // If the event is a key-down event on the "enter" button
+                if ((event.getAction() == android.view.KeyEvent.ACTION_DOWN) &&
+                    (keyCode == android.view.KeyEvent.KEYCODE_ENTER)) {
+                  // Perform action on key press
+                  InputFilter[] filters = new InputFilter[1];
+                  filters[0] = new InputFilter() {
+  					public CharSequence filter(CharSequence source, int start,
+							int end, android.text.Spanned dest, int dstart,
+							int dend) {
+                          if (end > start) {
+                              String destTxt = dest.toString();
+                              String resultingTxt = destTxt.substring(0, dstart) + source.subSequence(start, end) + destTxt.substring(dend);
+                              if (!resultingTxt.matches ("^\\d{1,3}(\\.(\\d{1,3}(\\.(\\d{1,3}(\\.(\\d{1,3})?)?)?)?)?)?")) { 
+                                  return "";
+                              } else {
+                                  String[] splits = resultingTxt.split("\\.");
+                                  for (int i=0; i<splits.length; i++) {
+                                      if (Integer.valueOf(splits[i]) > 255) {
+                                          return "";
+                                      }
+                                  }
+                              }
+                          }
+                          return null;
+                      }
+                  };
 
+                  mNetMaskEditTxt.setFilters(filters);
+                  return true;
+                }
+                return false;
+            }
+        });
+        
         this.mAdapter = ArrayAdapter.createFromResource(
                 this, R.array.actionArray, android.R.layout.simple_spinner_dropdown_item);
        
@@ -120,6 +159,8 @@ public final class PolicyEntry<KeyEvent> extends Activity {
                 mNameEditTxt.setText(elem);
                 elem = mCursor.getString(COLUMN_INDEX_ELEMENT + 1);
                 mIpEditTxt.setText(elem);
+                elem = mCursor.getString(COLUMN_INDEX_ELEMENT + 2);
+                mNetMaskEditTxt.setText(elem);
             }
         }
     }
@@ -146,6 +187,7 @@ public final class PolicyEntry<KeyEvent> extends Activity {
         	// save policy entry to data base 
         	String textName = mNameEditTxt.getText().toString();
         	String textIpAddr = mIpEditTxt.getText().toString();
+        	String textNetMask = mNetMaskEditTxt.getText().toString();
         	
         	if(textName.length() == 0 || textIpAddr.length() == 0) {
         		showAlertDialog(new String("Name and IP Address can not be empty!"));
@@ -168,6 +210,7 @@ public final class PolicyEntry<KeyEvent> extends Activity {
             values.put(Elements.MODIFIED_DATE, System.currentTimeMillis());
             values.put(Elements.NAME, textName);
             values.put(Elements.IPADDR, textIpAddr);
+            values.put(Elements.NETMASK, textNetMask);
             // Commit all of our changes to persistent storage. When the update completes
             // the content provider will notify the cursor of the change, which will
             // cause the UI to be updated.

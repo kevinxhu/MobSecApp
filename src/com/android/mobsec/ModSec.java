@@ -1,10 +1,15 @@
 package com.android.mobsec;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import android.os.Environment;
 import com.android.mobsec.PolicyEntry;
@@ -49,6 +54,7 @@ public class ModSec extends ListActivity {
         Elements._ID, // 0
         Elements.NAME, // 1
         Elements.IPADDR, //2
+        Elements.NETMASK, //3
     };   
     
     /** The index of the title column */
@@ -79,6 +85,39 @@ public class ModSec extends ListActivity {
         setListAdapter(adapter);
     }
     
+    @SuppressWarnings("unused")
+	private byte[] onDownloadPolicy () {
+        URL url;
+		try {
+			url = new URL("http://192.168.1.101/cacert.txt");
+		} catch (MalformedURLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			return null;
+		}
+        HttpURLConnection urlConnection;
+		try {
+			urlConnection = (HttpURLConnection) url.openConnection();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			return null;
+		}
+		byte[] data = null;
+        try {
+            InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+            data = new byte[in.available()];
+            in.read(data);
+        }
+        catch(IOException e) {
+        	e.printStackTrace();
+        }
+        finally {
+            urlConnection.disconnect();
+        }
+        return data;
+    }
+    
     private void onSaveFile() {
 		OutputStream os;
 		File path = getExternalFilesDir(null);
@@ -101,10 +140,30 @@ public class ModSec extends ListActivity {
 			e.printStackTrace();
 			return;
 		}
+		//byte[] data = onDownloadPolicy();
+		byte[] data = null;
+		if(data != null) {
+			try {
+				os.write(data);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			finally {
+				try {
+					os.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			return;
+		}
         Cursor cursor = managedQuery(getIntent().getData(), PROJECTION1, null, null,
                 Elements.DEFAULT_SORT_ORDER);
         String name;
         String ipAddr;
+        String netMask;
 		String strSpa = new String(" ");
 		String strEnter = new String("\n");
 		if(cursor.moveToFirst() == false) {
@@ -113,11 +172,14 @@ public class ModSec extends ListActivity {
         while(cursor != null) {
         	name = cursor.getString(COLUMN_INDEX_TITLE);
         	ipAddr = cursor.getString(COLUMN_INDEX_TITLE + 1);
+        	netMask = cursor.getString(COLUMN_INDEX_TITLE + 2);
         
 			try {
 				os.write(name.getBytes());
 				os.write(strSpa.getBytes());
 				os.write(ipAddr.getBytes());
+				os.write(strSpa.getBytes());
+				os.write(netMask.getBytes());
 				os.write(strEnter.getBytes());
 			} catch (IOException e) {
 				// TODO Auto-generated catch block

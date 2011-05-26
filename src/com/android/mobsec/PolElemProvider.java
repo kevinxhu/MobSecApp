@@ -29,7 +29,7 @@ public class PolElemProvider extends ContentProvider {
     private static final String TAG = "PolElemProvider";
 
     private static final String DATABASE_NAME = "mob_sec.db";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
     private static final String ELEMENTS_TABLE_NAME = "elements";
 
     private static HashMap<String, String> sNotesProjectionMap;
@@ -52,20 +52,26 @@ public class PolElemProvider extends ContentProvider {
 
         @Override
         public void onCreate(SQLiteDatabase db) {
+        	try {
             db.execSQL("CREATE TABLE " + ELEMENTS_TABLE_NAME + " ("
                     + Elements._ID + " INTEGER PRIMARY KEY,"
                     + Elements.NAME + " TEXT,"
                     + Elements.IPADDR + " TEXT,"
+                    + Elements.NETMASK + " TEXT,"
                     + Elements.CREATED_DATE + " INTEGER,"
                     + Elements.MODIFIED_DATE + " INTEGER"
                     + ");");
+        	}
+        	catch (SQLException e) {
+        		e.getCause();
+        	}
         }
 
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
             Log.w(TAG, "Upgrading database from version " + oldVersion + " to "
                     + newVersion + ", which will destroy all old data");
-            db.execSQL("DROP TABLE IF EXISTS notes");
+            db.execSQL("DROP TABLE IF EXISTS elements");
             onCreate(db);
         }
     }
@@ -154,11 +160,7 @@ public class PolElemProvider extends ContentProvider {
         if (values.containsKey(policyElem.Elements.CREATED_DATE) == false) {
             values.put(policyElem.Elements.CREATED_DATE, now);
         }
-
-        if (values.containsKey(policyElem.Elements.MODIFIED_DATE) == false) {
-            values.put(policyElem.Elements.MODIFIED_DATE, now);
-        }
-
+        
         if (values.containsKey(policyElem.Elements.NAME) == false) {
             Resources r = Resources.getSystem();
             values.put(policyElem.Elements.NAME, r.getString(android.R.string.untitled));
@@ -166,6 +168,14 @@ public class PolElemProvider extends ContentProvider {
 
         if (values.containsKey(policyElem.Elements.IPADDR) == false) {
             values.put(policyElem.Elements.IPADDR, "");
+        }
+        
+        if (values.containsKey(policyElem.Elements.NETMASK) == false) {
+            values.put(policyElem.Elements.NETMASK, "");
+        }
+        
+        if (values.containsKey(policyElem.Elements.MODIFIED_DATE) == false) {
+            values.put(policyElem.Elements.MODIFIED_DATE, now);
         }
 
         SQLiteDatabase db = mOpenHelper.getWritableDatabase();
@@ -175,7 +185,6 @@ public class PolElemProvider extends ContentProvider {
             getContext().getContentResolver().notifyChange(noteUri, null);
             return noteUri;
         }
-
         throw new SQLException("Failed to insert row into " + uri);
     }
 
@@ -235,6 +244,7 @@ public class PolElemProvider extends ContentProvider {
         sNotesProjectionMap.put(Elements._ID, Elements._ID);
         sNotesProjectionMap.put(Elements.NAME, Elements.NAME);
         sNotesProjectionMap.put(Elements.IPADDR, Elements.IPADDR);
+        sNotesProjectionMap.put(Elements.NETMASK, Elements.NETMASK);
         sNotesProjectionMap.put(Elements.CREATED_DATE, Elements.CREATED_DATE);
         sNotesProjectionMap.put(Elements.MODIFIED_DATE, Elements.MODIFIED_DATE);
 
