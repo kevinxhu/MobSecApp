@@ -29,7 +29,7 @@ public class PolElemProvider extends ContentProvider {
     private static final String TAG = "PolElemProvider";
 
     private static final String DATABASE_NAME = "mob_sec.db";
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 6;
     private static final String ELEMENTS_TABLE_NAME = "elements";
 
     private static HashMap<String, String> sNotesProjectionMap;
@@ -56,6 +56,7 @@ public class PolElemProvider extends ContentProvider {
             db.execSQL("CREATE TABLE " + ELEMENTS_TABLE_NAME + " ("
                     + Elements._ID + " INTEGER PRIMARY KEY,"
                     + Elements.NAME + " TEXT,"
+                    + Elements.TYPE + " TEXT,"
                     + Elements.IPADDR + " TEXT,"
                     + Elements.NETMASK + " TEXT,"
                     + Elements.CREATED_DATE + " INTEGER,"
@@ -165,11 +166,15 @@ public class PolElemProvider extends ContentProvider {
             Resources r = Resources.getSystem();
             values.put(policyElem.Elements.NAME, r.getString(android.R.string.untitled));
         }
-
+        
+        if (values.containsKey(policyElem.Elements.TYPE) == false) {
+            values.put(policyElem.Elements.TYPE, "");
+        }
+        
         if (values.containsKey(policyElem.Elements.IPADDR) == false) {
             values.put(policyElem.Elements.IPADDR, "");
         }
-        
+
         if (values.containsKey(policyElem.Elements.NETMASK) == false) {
             values.put(policyElem.Elements.NETMASK, "");
         }
@@ -243,6 +248,7 @@ public class PolElemProvider extends ContentProvider {
         sNotesProjectionMap = new HashMap<String, String>();
         sNotesProjectionMap.put(Elements._ID, Elements._ID);
         sNotesProjectionMap.put(Elements.NAME, Elements.NAME);
+        sNotesProjectionMap.put(Elements.TYPE, Elements.TYPE);
         sNotesProjectionMap.put(Elements.IPADDR, Elements.IPADDR);
         sNotesProjectionMap.put(Elements.NETMASK, Elements.NETMASK);
         sNotesProjectionMap.put(Elements.CREATED_DATE, Elements.CREATED_DATE);

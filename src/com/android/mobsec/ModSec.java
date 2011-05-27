@@ -53,8 +53,9 @@ public class ModSec extends ListActivity {
     private static final String[] PROJECTION1 = new String[] {
         Elements._ID, // 0
         Elements.NAME, // 1
-        Elements.IPADDR, //2
-        Elements.NETMASK, //3
+        Elements.TYPE, // 2
+        Elements.IPADDR, //3
+        Elements.NETMASK, //4
     };   
     
     /** The index of the title column */
@@ -162,6 +163,7 @@ public class ModSec extends ListActivity {
         Cursor cursor = managedQuery(getIntent().getData(), PROJECTION1, null, null,
                 Elements.DEFAULT_SORT_ORDER);
         String name;
+        String type;
         String ipAddr;
         String netMask;
 		String strSpa = new String(" ");
@@ -171,11 +173,14 @@ public class ModSec extends ListActivity {
 		}
         while(cursor != null) {
         	name = cursor.getString(COLUMN_INDEX_TITLE);
-        	ipAddr = cursor.getString(COLUMN_INDEX_TITLE + 1);
-        	netMask = cursor.getString(COLUMN_INDEX_TITLE + 2);
+        	type = cursor.getString(COLUMN_INDEX_TITLE + 1);
+        	ipAddr = cursor.getString(COLUMN_INDEX_TITLE + 2);
+        	netMask = cursor.getString(COLUMN_INDEX_TITLE + 3);
         
 			try {
 				os.write(name.getBytes());
+				os.write(strSpa.getBytes());
+				os.write(type.getBytes());
 				os.write(strSpa.getBytes());
 				os.write(ipAddr.getBytes());
 				os.write(strSpa.getBytes());

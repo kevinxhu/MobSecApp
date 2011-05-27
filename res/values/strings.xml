@@ -37,6 +37,7 @@
         <string name="polLst">polLst</string>
         <string name="entryTxtMask">Network Mask</string>
         <string name="entryStdMask">Network Mask</string>
+        <string name="txtDomain">Domain Name</string>
 
 
 

@@ -39,13 +39,20 @@ public final class policyElem {
          * The default sort order for this table
          */
         public static final String DEFAULT_SORT_ORDER = "modified DESC";
-
+        
         /**
-         * The name of the policy
+         * The type of dest IP or domain
          * <P>Type: TEXT</P>
          */
         public static final String NAME = "name";
 
+        /**
+         * The name of the policy
+         * <P>Type: Text</P>
+         * IP: 0, Domain: 1
+         */
+        public static final String TYPE = "type";
+        
         /**
          * The IP address
          * <P>Type: TEXT</P>
