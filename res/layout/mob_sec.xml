@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android" android:id="@+id/scroll" android:layout_width="fill_parent" android:layout_height="wrap_content">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_gravity="center_horizontal"
+    android:layout_width="wrap_content"
+    android:layout_height="fill_parent" android:gravity="center_vertical|center_horizontal" android:scrollbars="vertical">
+
+        <Button
+                android:text="Network Firewall"
+                android:layout_height="wrap_content" style="@style/Button" android:layout_width="240dip" android:id="@+id/btNetFw"/>
+
+        <Button
+                android:text="SMS Firewall"
+                android:enabled="false"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" style="@style/Button"/>
+
+        <Button
+                android:text="Phone Firewall"
+                android:enabled="false"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" style="@style/Button"/>
+        <Button
+                android:text="Anti Virus"
+                android:enabled="false"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" style="@style/Button"/>
+        <Button
+                android:text="GPS Location"
+                android:enabled="false"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" style="@style/Button"/>
+        <Button
+                android:text="Bandwidth Management"
+                android:enabled="false"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" style="@style/Button"/>
+        <Button
+                android:text="Parent Control"
+                android:enabled="false"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" style="@style/Button"/>
+        <Button
+                android:text="Remote Lock"
+                android:enabled="false"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" style="@style/Button"/>
+</LinearLayout>
+</ScrollView>
