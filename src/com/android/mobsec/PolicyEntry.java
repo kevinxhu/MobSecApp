@@ -4,14 +4,12 @@ import com.android.mobsec.policyElem.Elements;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.AlertDialog.Builder;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,8 +21,6 @@ import android.widget.Spinner;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.view.KeyEvent;
-import android.R.layout;
-import android.text.Editable;
 import android.text.InputFilter;
 
 public final class PolicyEntry<KeyEvent> extends Activity {

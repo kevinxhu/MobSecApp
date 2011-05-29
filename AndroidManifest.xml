@@ -20,6 +20,7 @@
         </activity>
         <activity android:name="PolicyEntry"></activity>
         <activity android:name="policyPref"></activity>
+        <activity android:name="policyList"></activity>
 
     </application>
 </manifest>
