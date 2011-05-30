@@ -21,6 +21,8 @@
         <activity android:name="PolicyEntry"></activity>
         <activity android:name="policyPref"></activity>
         <activity android:name="policyList"></activity>
+        <activity android:name="networkFw"></activity>
+        <activity android:name="policyStatus"></activity>
 
     </application>
 </manifest>

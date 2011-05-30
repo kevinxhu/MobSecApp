@@ -9,7 +9,6 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 
 public class ModSec extends Activity implements OnClickListener{
-    /** Called when the activity is first created. */
 	private Button btNetFw;
 	
     @Override
@@ -28,7 +27,7 @@ public class ModSec extends Activity implements OnClickListener{
     	
     	if(bt.getId() == R.id.btNetFw) {
     		try {
-    			startActivity (new Intent(this, policyList.class));
+    			startActivity (new Intent(this, networkFw.class));
     		}
     		catch (ActivityNotFoundException e) {
     			e.getCause();

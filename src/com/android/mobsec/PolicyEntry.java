@@ -23,6 +23,7 @@ import android.widget.TextView;
 import android.view.KeyEvent;
 import android.text.InputFilter;
 
+@SuppressWarnings("hiding")
 public final class PolicyEntry<KeyEvent> extends Activity {
     // Menu item ids
     public static final int MENU_ITEM_SAVE = Menu.FIRST;
