@@ -13,6 +13,16 @@
      <string name="menu_delete">Delete</string>
     <string name="action_prompt">Action</string>
     
+    <string name="gridview1">防火墙</string>
+    <string name="gridview2">远程锁定</string>
+    <string name="gridview3">云数据备份</string>
+    <string name="gridview4">数据加密</string>
+    <string name="gridview5">GPS定位</string>
+    <string name="gridview6">带宽管理</string>
+    <string name="gridview7">家长管理</string>
+    <string name="gridview8">电话黑名单</string>
+    <string name="gridview9">防病毒</string>
+    
     <string name="inline_preferences">Preferences</string>
     <string name="title_list_preference">Policy Mode</string>
     <string name="summary_list_preference">Choose where policy come from</string>
