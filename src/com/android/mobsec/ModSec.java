@@ -27,7 +27,7 @@ public class ModSec extends Activity{
         {   
           HashMap<String, Object> map = new HashMap<String, Object>();
           if(i==1){
-                map.put("ItemImage", R.drawable.privatespace);
+                map.put("ItemImage", R.drawable.net_fw);
                 map.put("ItemText", getResources().getString(R.string.gridview1));
           }
           if(i==2){  
