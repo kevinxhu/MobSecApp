@@ -16,11 +16,11 @@ public class networkFw extends TabActivity {
         Resources res = getResources(); // Resource object to get Drawables
 
         tabHost.addTab(tabHost.newTabSpec("tab1")
-                .setIndicator("Status", res.getDrawable(R.drawable.ic_tab_status))
+                .setIndicator(getString(R.string.tab_status), res.getDrawable(R.drawable.ic_tab_status))
                 .setContent(new Intent(this, policyStatus.class)));
 
         tabHost.addTab(tabHost.newTabSpec("tab2")
-                .setIndicator("Policy List", res.getDrawable(R.drawable.ic_tab_policy))
+                .setIndicator(getString(R.string.tab_policy), res.getDrawable(R.drawable.ic_tab_policy))
                 .setContent(new Intent(this, policyList.class)));
     }
 }
