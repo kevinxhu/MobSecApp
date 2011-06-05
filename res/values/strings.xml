@@ -16,6 +16,8 @@
     <string name="tab_status">状态</string>
     <string name="tab_policy">策略列表</string>
     
+    <string name="progress_message">下载中</string>
+    
     <string name="gridview1">防火墙</string>
     <string name="gridview2">远程锁定</string>
     <string name="gridview3">云数据备份</string>

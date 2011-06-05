@@ -15,13 +15,17 @@ import com.android.mobsec.PolicyEntry;
 import com.android.mobsec.policyPref;
 import com.android.mobsec.policyElem.Elements;
 
+import android.app.Dialog;
 import android.app.ListActivity;
+import android.app.ProgressDialog;
 import android.content.ContentUris;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.preference.PreferenceManager;
 import android.view.ContextMenu;
 import android.view.Menu;
@@ -59,6 +63,11 @@ public class policyList extends ListActivity {
     /** The index of the title column */
     private static final int COLUMN_INDEX_TITLE = 1;
     
+    static final int PROGRESS_DIALOG = 0;
+
+    ProgressThread progressThread;
+    ProgressDialog progressDialog;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -210,6 +219,8 @@ public class policyList extends ListActivity {
         if(strMode.equalsIgnoreCase(new String("remote"))) {
         	mPolSyncMode = false;
             setListAdapter(null);
+            
+            showDialog(PROGRESS_DIALOG);
         }
         else {
         	mPolSyncMode = true;
@@ -342,5 +353,76 @@ public class policyList extends ListActivity {
             }
         }
         return false;
+    }
+    
+
+    
+    /** Nested class that performs progress calculations (counting) */
+    final class ProgressThread extends Thread {
+        Handler mHandler;
+        final static int STATE_DONE = 0;
+        final static int STATE_RUNNING = 1;
+        int mState;
+        int total;
+       
+		ProgressThread(Handler h) {
+            mHandler = h;
+        }
+       
+        public void run() {
+            mState = STATE_RUNNING;   
+            total = 0;
+            while (mState == STATE_RUNNING) {
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                	e.getCause();
+                }
+                Message msg = mHandler.obtainMessage();
+                msg.arg1 = total;
+                mHandler.sendMessage(msg);
+                total++;
+            }
+        }
+        
+        /* sets the current state for the thread,
+         * used to stop the thread */
+        public void setState(int state) {
+            mState = state;
+        }
+    }
+    
+    // Define the Handler that receives messages from the thread and update the progress
+    final Handler handler = new Handler() {
+        public void handleMessage(Message msg) {
+            int total = msg.arg1;
+            progressDialog.setProgress(total);
+            if (total >= 100){
+                dismissDialog(PROGRESS_DIALOG);
+                progressThread.setState(ProgressThread.STATE_DONE);
+            }
+        }
+    };
+    
+    protected Dialog onCreateDialog(int id) {
+        switch(id) {
+        case PROGRESS_DIALOG:
+            progressDialog = new ProgressDialog(policyList.this);
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progressDialog.setMessage(getString(R.string.progress_message));
+            return progressDialog;
+        default:
+            return null;
+        }
+    }
+    
+    @Override
+    protected void onPrepareDialog(int id, Dialog dialog) {
+        switch(id) {
+        case PROGRESS_DIALOG:
+            progressDialog.setProgress(0);
+            progressThread = new ProgressThread(handler);
+            progressThread.start();
+        }
     }
 }
