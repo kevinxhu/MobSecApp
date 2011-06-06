@@ -2,6 +2,7 @@ package com.android.mobsec;
 
 import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -19,6 +20,8 @@ import android.app.Dialog;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.ContentUris;
+import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -44,7 +47,7 @@ public class policyList extends ListActivity {
     public static final int MENU_ITEM_PREFERENCE = Menu.FIRST + 2;
     
     private static boolean mPolSyncMode = true; // true for local mode and false for remote mode
-    
+    private static Context mCurContext = null;
     /**
      * Standard projection for the interesting columns of a normal note.
      */
@@ -60,7 +63,11 @@ public class policyList extends ListActivity {
         Elements.NETMASK, //4
     };   
     
+    private static final String LOCAL_FILE = "mobSec_lo.txt";
+    private static final String REMOTE_FILE = "mobSec_bk.txt";
+    
     /** The index of the title column */
+    private static final int COLUMN_INDEX_ID = 0;
     private static final int COLUMN_INDEX_TITLE = 1;
     
     static final int PROGRESS_DIALOG = 0;
@@ -79,6 +86,8 @@ public class policyList extends ListActivity {
             intent.setData(Elements.CONTENT_URI);
         }
         
+        mCurContext = this;
+        
         // Inform the list we provide context menus for items
         getListView().setOnCreateContextMenuListener(this);
         
@@ -93,11 +102,10 @@ public class policyList extends ListActivity {
         setListAdapter(adapter);
     }
     
-    @SuppressWarnings("unused")
 	private byte[] onDownloadPolicy () {
         URL url;
 		try {
-			url = new URL("http://192.168.1.101/cacert.txt");
+			url = new URL("http://192.168.1.101/mobSec.txt");
 		} catch (MalformedURLException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -125,11 +133,60 @@ public class policyList extends ListActivity {
         }
         return data;
     }
+	
+	private void onReadFile(String filename) {
+		File path = getExternalFilesDir(null);
+		File file = new File(path, filename);
+		InputStream is;
+		
+		deleteAllContentsData();
+		if(file.exists() == false) {
+			return;
+		}
+		
+		try {
+		    is = new BufferedInputStream(new FileInputStream(file));
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return;
+		}
+		byte[] data = null;
+		try {
+            data = new byte[is.available()];
+            is.read(data);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return;
+		}
+		
+    	String strPolicy = new String(data);
+    	
+    	String[] fields = strPolicy.split("\n");
+    	int policyNum = fields.length;
+    	for(int i = 0; i < policyNum; i++) {
+    		String policyEntry[] = fields[i].split(" ");
+    		Uri uri = getContentResolver().insert(Elements.CONTENT_URI, null);
+            ContentValues values = new ContentValues();
+            values.put(Elements.MODIFIED_DATE, System.currentTimeMillis());
+            values.put(Elements.NAME, policyEntry[0]);
+            values.put(Elements.TYPE, policyEntry[1]);
+            values.put(Elements.IPADDR, policyEntry[2]);
+            if(policyEntry[1].equalsIgnoreCase("0")) {
+            	values.put(Elements.NETMASK, policyEntry[3]);
+            }
+            // Commit all of our changes to persistent storage. When the update completes
+            // the content provider will notify the cursor of the change, which will
+            // cause the UI to be updated.
+            getContentResolver().update(uri, values, null, null);
+    	}
+	}
     
     private void onSaveFile() {
 		OutputStream os;
 		File path = getExternalFilesDir(null);
-		File file = new File(path, "mobSec.txt");
+		File file = new File(path, LOCAL_FILE);
 		
 		if(file.exists() == false) {
 			try {
@@ -148,25 +205,7 @@ public class policyList extends ListActivity {
 			e.printStackTrace();
 			return;
 		}
-		//byte[] data = onDownloadPolicy();
-		byte[] data = null;
-		if(data != null) {
-			try {
-				os.write(data);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			finally {
-				try {
-					os.close();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-			return;
-		}
+
         Cursor cursor = managedQuery(getIntent().getData(), PROJECTION1, null, null,
                 Elements.DEFAULT_SORT_ORDER);
         String name;
@@ -214,6 +253,8 @@ public class policyList extends ListActivity {
         super.onResume();
         String strMode;
         
+        deleteAllContentsData();
+        
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         strMode = prefs.getString("list_preference", new String(""));
         if(strMode.equalsIgnoreCase(new String("remote"))) {
@@ -224,6 +265,8 @@ public class policyList extends ListActivity {
         }
         else {
         	mPolSyncMode = true;
+        	
+        	onReadFile(LOCAL_FILE);
             // Perform a managed query. The Activity will handle closing and requerying the cursor
             // when needed.
             Cursor cursor = managedQuery(getIntent().getData(), PROJECTION, null, null,
@@ -233,6 +276,23 @@ public class policyList extends ListActivity {
             SimpleCursorAdapter adapter = new SimpleCursorAdapter(this, R.layout.policy_list, cursor,
                     new String[] { Elements.NAME }, new int[] { R.id.policyList });
             setListAdapter(adapter);
+        }
+    }
+    
+    private void deleteAllContentsData() {
+        Cursor cursor = managedQuery(getIntent().getData(), PROJECTION, null, null,
+                Elements.DEFAULT_SORT_ORDER);   	
+        if(cursor.moveToFirst() == false) { 
+        	return;
+        }
+        while(cursor != null) {
+        	long id = cursor.getLong(COLUMN_INDEX_ID);
+            Uri noteUri = ContentUris.withAppendedId(getIntent().getData(), id);
+            getContentResolver().delete(noteUri, null, null);
+            
+            if(cursor.moveToNext() == false) {
+            	break;
+            } 
         }
     }
     
@@ -270,6 +330,9 @@ public class policyList extends ListActivity {
         
         if(mPolSyncMode == false) {
         	menu.setGroupEnabled(0, false);
+        }
+        else {
+        	menu.setGroupEnabled(0, true);
         }
     	return true;
     }
@@ -355,8 +418,6 @@ public class policyList extends ListActivity {
         return false;
     }
     
-
-    
     /** Nested class that performs progress calculations (counting) */
     final class ProgressThread extends Thread {
         Handler mHandler;
@@ -373,15 +434,73 @@ public class policyList extends ListActivity {
             mState = STATE_RUNNING;   
             total = 0;
             while (mState == STATE_RUNNING) {
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                	e.getCause();
-                }
+            	byte data[] = onDownloadPolicy();
+            	OutputStream os;
+        		File path = getExternalFilesDir(null);
+        		File file = new File(path, REMOTE_FILE);
+        		
+        		if(file.exists() == false) {
+        			try {
+        				file.createNewFile();
+        			} catch (IOException e) {
+        				// TODO Auto-generated catch block
+        				e.printStackTrace();
+        				return;
+        			}
+        		}
+        			
+        		try {
+        			os = new FileOutputStream(file);
+        		} catch (FileNotFoundException e) {
+        			// TODO Auto-generated catch block
+        			e.printStackTrace();
+        			return;
+        		}
+
+        		if(data != null) {
+        			try {
+        				os.write(data);
+        			} catch (IOException e) {
+        				// TODO Auto-generated catch block
+        				e.printStackTrace();
+        			}
+        			finally {
+        				try {
+        					os.close();
+        				} catch (IOException e) {
+        					// TODO Auto-generated catch block
+        					e.printStackTrace();
+        				}
+        			}
+        		}
+        		
+            	String strPolicy = new String(data);
+            	
+            	String[] fields = strPolicy.split("\n");
+            	int policyNum = fields.length;
+            	for(int i = 0; i < policyNum; i++) {
+            		String policyEntry[] = fields[i].split(" ");
+            		Uri uri = getContentResolver().insert(Elements.CONTENT_URI, null);
+                    ContentValues values = new ContentValues();
+                    values.put(Elements.MODIFIED_DATE, System.currentTimeMillis());
+                    values.put(Elements.NAME, policyEntry[0]);
+                    values.put(Elements.TYPE, policyEntry[1]);
+                    values.put(Elements.IPADDR, policyEntry[2]);
+                    if(policyEntry[1].equalsIgnoreCase("0")) {
+                    	values.put(Elements.NETMASK, policyEntry[3]);
+                    }
+                    // Commit all of our changes to persistent storage. When the update completes
+                    // the content provider will notify the cursor of the change, which will
+                    // cause the UI to be updated.
+                    getContentResolver().update(uri, values, null, null);
+            	}
+            	
+            	total += 100;
                 Message msg = mHandler.obtainMessage();
                 msg.arg1 = total;
                 mHandler.sendMessage(msg);
                 total++;
+                break;
             }
         }
         
@@ -400,6 +519,13 @@ public class policyList extends ListActivity {
             if (total >= 100){
                 dismissDialog(PROGRESS_DIALOG);
                 progressThread.setState(ProgressThread.STATE_DONE);
+                Cursor cursor = managedQuery(getIntent().getData(), PROJECTION, null, null,
+                        Elements.DEFAULT_SORT_ORDER);
+                
+                // Used to map notes entries from the database to views
+                SimpleCursorAdapter adapter = new SimpleCursorAdapter(mCurContext, R.layout.policy_list, cursor,
+                        new String[] { Elements.NAME }, new int[] { R.id.policyList });
+                setListAdapter(adapter);
             }
         }
     };

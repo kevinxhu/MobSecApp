@@ -7,9 +7,11 @@ import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -208,6 +210,12 @@ public final class PolicyEntry<KeyEvent> extends Activity {
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        String strMode = prefs.getString("list_preference", new String(""));
+        // do not show menu for remote mode
+        if(strMode.equalsIgnoreCase(new String("remote"))) {
+        	return true;
+        }
         // This is our one standard application action -- inserting a
         // new note into the list.
         MenuItem mItem = menu.add(0, MENU_ITEM_SAVE, 0, R.string.menu_save);
