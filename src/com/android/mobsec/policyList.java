@@ -11,6 +11,18 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
 
 import com.android.mobsec.PolicyEntry;
 import com.android.mobsec.policyPref;
@@ -26,10 +38,13 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
+import android.os.Build.VERSION;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
+import android.telephony.TelephonyManager;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -429,11 +444,41 @@ public class policyList extends ListActivity {
 		ProgressThread(Handler h) {
             mHandler = h;
         }
+		
+		public void postDeviceData() {
+		    // Create a new HttpClient and Post Header
+		    HttpClient httpclient = new DefaultHttpClient();
+		    HttpPost httppost = new HttpPost("http://192.168.1.101:8080/cgi-bin/devInit.pl");
+		    TelephonyManager telMan = ((TelephonyManager)getSystemService(TELEPHONY_SERVICE));
+		    String deviceId = telMan.getDeviceId();
+		    String version = Build.VERSION.RELEASE;
+		    
+		    try {
+		        // Add your data
+		        List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
+		        nameValuePairs.add(new BasicNameValuePair("deviceId", deviceId));
+		        nameValuePairs.add(new BasicNameValuePair("version", version));
+		        httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+
+		        // Execute HTTP Post Request
+		        HttpResponse response = httpclient.execute(httppost);
+		        int stCode = response.getStatusLine().getStatusCode();
+		        if(stCode == 200) {
+		        	return;
+		        }
+		    } catch (ClientProtocolException e) {
+		        // TODO Auto-generated catch block
+		    } catch (IOException e) {
+		        // TODO Auto-generated catch block
+		    }
+		} 
        
         public void run() {
             mState = STATE_RUNNING;   
             total = 0;
             while (mState == STATE_RUNNING) {
+            	postDeviceData();
+            	
             	byte data[] = onDownloadPolicy();
             	OutputStream os;
         		File path = getExternalFilesDir(null);
