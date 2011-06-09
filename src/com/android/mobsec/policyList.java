@@ -117,6 +117,8 @@ public class policyList extends ListActivity {
         return data;
     }
     
+    public native int updateFwAcl(String configPath);
+    
     private void onSaveFile() {
 		OutputStream os;
 		File path = getExternalFilesDir(null);
@@ -166,6 +168,7 @@ public class policyList extends ListActivity {
         String netMask;
 		String strSpa = new String(" ");
 		String strEnter = new String("\n");
+		String strType0 = new String("0");
 		if(cursor.moveToFirst() == false) {
 			return;
 		}
@@ -181,8 +184,11 @@ public class policyList extends ListActivity {
 				os.write(type.getBytes());
 				os.write(strSpa.getBytes());
 				os.write(ipAddr.getBytes());
-				os.write(strSpa.getBytes());
-				os.write(netMask.getBytes());
+				if (type.compareTo(strType0) == 0)
+				{
+					os.write(strSpa.getBytes());
+					os.write(netMask.getBytes());
+				}
 				os.write(strEnter.getBytes());
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -197,7 +203,13 @@ public class policyList extends ListActivity {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}    	
+		}    
+		
+		//inform msa firewall driver to update ACL configuration
+		String configFile = file.getAbsolutePath();
+		int ret;
+		
+		ret = updateFwAcl(configFile);
     }
     
     @Override
@@ -342,5 +354,9 @@ public class policyList extends ListActivity {
             }
         }
         return false;
+    }
+    
+    static {
+        System.loadLibrary("msaFw");
     }
 }
