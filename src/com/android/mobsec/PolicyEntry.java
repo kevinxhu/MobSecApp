@@ -22,7 +22,6 @@ import android.widget.RadioButton;
 import android.widget.Spinner;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.view.KeyEvent;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextWatcher;

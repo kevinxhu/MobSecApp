@@ -1,7 +1,6 @@
 package com.android.mobsec;
 
 import android.app.Activity;
-import android.app.TabActivity;
 import android.os.Bundle;
 import android.widget.TextView;
 
