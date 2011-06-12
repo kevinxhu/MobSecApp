@@ -3,15 +3,21 @@
     <string name="hello">Hello World, ModSec!</string>
     <string name="app_name">MobSec</string>
     <string name="addPolicy">Add Polycy...</string>
-    <string name="menu_add">Add Policy</string>
-    <string name="policyEntry">Policy Entry</string>
-    <string name="txtIpAddr">IP Address</string>
-    <string name="txtStdAction">Action</string>
-    <string name="menu_save">Save</string>
-    <string name="menu_pref">Preference</string>
-    <string name="menu_discard">Discard</string>
-     <string name="menu_delete">Delete</string>
+    <string name="menu_add">增加策略</string>
+    <string name="policyEntry">策略条目</string>
+    <string name="txtIpAddr">IP地址</string>
+    <string name="txtStdAction">动作</string>
+    <string name="menu_save">保存</string>
+    <string name="menu_pref">配置</string>
+    <string name="menu_discard">放弃</string>
+    <string name="menu_delete">删除</string>
     <string name="action_prompt">Action</string>
+    
+    <string name="tab_status">状态</string>
+    <string name="tab_policy">策略列表</string>
+    
+    <string name="progress_message">下载中</string>
+    <string name="alert_badname">策略名必须是字母或数字</string>
     
     <string name="gridview1">防火墙</string>
     <string name="gridview2">远程锁定</string>
@@ -23,15 +29,17 @@
     <string name="gridview8">电话黑名单</string>
     <string name="gridview9">防病毒</string>
     
-    <string name="inline_preferences">Preferences</string>
-    <string name="title_list_preference">Policy Mode</string>
-    <string name="summary_list_preference">Choose where policy come from</string>
-    <string name="dialog_title_list_preference">Policy Source</string>
+    <string name="inline_preferences">配置</string>
+    <string name="title_list_preference">策略模式</string>
+    <string name="summary_list_preference">选择策略源</string>
+    <string name="dialog_title_list_preference">策略源</string>
     
     <string-array name="entries_list_preference">
-        <item>Local</item>
-        <item>Backend</item>
+        <item>本地</item>
+        <item>后台</item>
     </string-array>
+    
+    <string name="title_remserver_preference">后台服务器地址</string>
     
     <string-array name="entryvalues_list_preference">
         <item>local</item>
@@ -39,15 +47,15 @@
     </string-array>
     
     <string-array name="actionArray">
-        <item>Allow</item>
-        <item>Deny</item>
+        <item>允许</item>
+        <item>拒绝</item>
     </string-array>
         <string name="defTxtString"></string>
-        <string name="policyName">Policy Name</string>
+        <string name="policyName">策略名</string>
         <string name="polLst">polLst</string>
         <string name="entryTxtMask">Network Mask</string>
-        <string name="entryStdMask">Network Mask</string>
-        <string name="txtDomain">Domain Name</string>
+        <string name="entryStdMask">子网掩码</string>
+        <string name="txtDomain">域名</string>
 
 
 

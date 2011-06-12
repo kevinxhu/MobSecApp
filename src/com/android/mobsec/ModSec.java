@@ -30,39 +30,39 @@ public class ModSec extends Activity{
         {   
           HashMap<String, Object> map = new HashMap<String, Object>();
           if(i==1){
-                map.put("ItemImage", R.drawable.net_fw);
+                map.put("ItemImage", R.drawable.firewall);
                 map.put("ItemText", getResources().getString(R.string.gridview1));
           }
           if(i==2){  
-              map.put("ItemImage", R.drawable.privatespace);
+              map.put("ItemImage", R.drawable.lock);
               map.put("ItemText", getResources().getString(R.string.gridview2));
           }
           if(i==3){  
-              map.put("ItemImage", R.drawable.privatespace);
+              map.put("ItemImage", R.drawable.data);
               map.put("ItemText", getResources().getString(R.string.gridview3));
           }
           if(i==4){  
-              map.put("ItemImage", R.drawable.privatespace);
+              map.put("ItemImage", R.drawable.encryption);
               map.put("ItemText", getResources().getString(R.string.gridview4));   
           }
           if(i==5){  
-              map.put("ItemImage", R.drawable.privatespace);
+              map.put("ItemImage", R.drawable.gps);
               map.put("ItemText", getResources().getString(R.string.gridview5));
           }
           if(i==6){  
-              map.put("ItemImage", R.drawable.privatespace);
+              map.put("ItemImage", R.drawable.bwm);
               map.put("ItemText", getResources().getString(R.string.gridview6));
           }
           if(i==7){  
-              map.put("ItemImage", R.drawable.privatespace);
+              map.put("ItemImage", R.drawable.parent);
               map.put("ItemText", getResources().getString(R.string.gridview7));
           }
           if(i==8){  
-              map.put("ItemImage", R.drawable.privatespace);
+              map.put("ItemImage", R.drawable.blacklist);
               map.put("ItemText", getResources().getString(R.string.gridview8));
           }
           if(i==9){  
-              map.put("ItemImage", R.drawable.privatespace);
+              map.put("ItemImage", R.drawable.antivirus);
               map.put("ItemText", getResources().getString(R.string.gridview9));
           }
           lstImageItem.add(map);
@@ -79,7 +79,7 @@ public class ModSec extends Activity{
         //get root privilege
         getRoot();
     }
-    
+        
     public void launchNetFw() {
 		   try {
 			   startActivity (new Intent(this, networkFw.class));
@@ -89,7 +89,7 @@ public class ModSec extends Activity{
 		   }
     	
     }
-    
+        
     class  ItemClickListener implements OnItemClickListener   
     {   
        @SuppressWarnings("unchecked")

@@ -7,9 +7,11 @@ import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,11 +22,11 @@ import android.widget.RadioButton;
 import android.widget.Spinner;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.view.KeyEvent;
+import android.text.Editable;
 import android.text.InputFilter;
+import android.text.TextWatcher;
 
-@SuppressWarnings("hiding")
-public final class PolicyEntry<KeyEvent> extends Activity {
+public final class PolicyEntry extends Activity implements TextWatcher {
     // Menu item ids
     public static final int MENU_ITEM_SAVE = Menu.FIRST;
     public static final int MENU_ITEM_DISCARD = Menu.FIRST + 1;	
@@ -72,6 +74,8 @@ public final class PolicyEntry<KeyEvent> extends Activity {
         
         //name
         mNameEditTxt = (EditText) findViewById(R.id.txtPolicyName);
+        mNameEditTxt.setOnKeyListener(nameKeyListner);
+
         // Action dropdown view
         mActionSpin = (Spinner) findViewById(R.id.entrySpinAction);
         // IP address input
@@ -84,7 +88,7 @@ public final class PolicyEntry<KeyEvent> extends Activity {
 
         // network mask
         mNetMaskEditTxt = (EditText) findViewById(R.id.entryTxtMask);
-        mNetMaskEditTxt.setOnKeyListener(keyListner);
+        mNetMaskEditTxt.setOnKeyListener(addrKeyListner);
         
         //Radio Group
         mIpRadioBt = (RadioButton) findViewById(R.id.radio_ip);
@@ -140,13 +144,43 @@ public final class PolicyEntry<KeyEvent> extends Activity {
             }
         }
         else if (Intent.ACTION_INSERT.equals(action)) {
-            mIpEditTxt.setOnKeyListener(keyListner);
+            mIpEditTxt.setOnKeyListener(addrKeyListner);
             mDomainEditTxt.setVisibility(View.GONE);
             mIpRadioBt.setChecked(true);
         }
+        
+        mNameEditTxt.addTextChangedListener(this);
     }
     
-    private OnKeyListener keyListner = new OnKeyListener () {
+    private OnKeyListener nameKeyListner = new OnKeyListener () {
+        public boolean onKey(View v, int keyCode, android.view.KeyEvent event) {
+            // If the event is a key-down event on the "enter" button
+            EditText edtTxt = (EditText)v;
+        	if ((event.getAction() == android.view.KeyEvent.ACTION_DOWN) &&
+                (keyCode == android.view.KeyEvent.KEYCODE_ENTER)) {
+              // Perform action on key press
+              InputFilter[] filters = new InputFilter[1];
+              filters[0] = new InputFilter() {
+					public CharSequence filter(CharSequence source, int start,
+						int end, android.text.Spanned dest, int dstart,
+						int dend) {
+                      String in = source.toString();
+                      
+                      if((in.compareToIgnoreCase("a") < 0 || in.compareToIgnoreCase("z") > 0) && (in.compareTo("0") < 0 || in.compareTo("9") > 0)) {
+                    	  return "";
+                      }
+                      return null;
+                  }
+              };
+
+              edtTxt.setFilters(filters);
+              return true;
+            }
+            return false;
+        }    	
+    };    
+    
+    private OnKeyListener addrKeyListner = new OnKeyListener () {
         public boolean onKey(View v, int keyCode, android.view.KeyEvent event) {
             // If the event is a key-down event on the "enter" button
             EditText edtTxt = (EditText)v;
@@ -208,6 +242,12 @@ public final class PolicyEntry<KeyEvent> extends Activity {
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        String strMode = prefs.getString("list_preference", new String(""));
+        // do not show menu for remote mode
+        if(strMode.equalsIgnoreCase(new String("remote"))) {
+        	return true;
+        }
         // This is our one standard application action -- inserting a
         // new note into the list.
         MenuItem mItem = menu.add(0, MENU_ITEM_SAVE, 0, R.string.menu_save);
@@ -290,5 +330,27 @@ public final class PolicyEntry<KeyEvent> extends Activity {
         AlertDialog alert = builder.create();
         alert.show();
       }
+
+	@Override
+	public void afterTextChanged(Editable arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void beforeTextChanged(CharSequence s, int start, int count,
+			int after) {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void onTextChanged(CharSequence s, int start, int before, int count) {
+		// TODO Auto-generated method stub
+		String in = s.subSequence(start, start + 1).toString();
+        if((in.compareToIgnoreCase("a") < 0 || in.compareToIgnoreCase("z") > 0) && (in.compareTo("0") < 0 || in.compareTo("9") > 0)) {
+        	showAlertDialog(getString(R.string.alert_badname));
+      	    mNameEditTxt.setText(s.subSequence(0, start));
+        }
+	}
 
 }
