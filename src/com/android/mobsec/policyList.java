@@ -61,6 +61,8 @@ public class policyList extends ListActivity {
     
     private static boolean mPolSyncMode = true; // true for local mode and false for remote mode
     private static Context mCurContext = null;
+    
+    private static String  mRemoteServerAddr = null;
     /**
      * Standard projection for the interesting columns of a normal note.
      */
@@ -118,7 +120,7 @@ public class policyList extends ListActivity {
 	private byte[] onDownloadPolicy () {
         URL url;
 		try {
-			url = new URL("http://192.168.1.101/mobSec.txt");
+			url = new URL("http://"+ mRemoteServerAddr + "/mobSec.txt");
 		} catch (MalformedURLException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -269,6 +271,8 @@ public class policyList extends ListActivity {
         deleteAllContentsData();
         
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        mRemoteServerAddr = prefs.getString("mobsec_remoteserver", new String(""));
+        
         strMode = prefs.getString("list_preference", new String(""));
         if(strMode.equalsIgnoreCase(new String("remote"))) {
         	mPolSyncMode = false;
@@ -446,7 +450,7 @@ public class policyList extends ListActivity {
 		public void postDeviceData() {
 		    // Create a new HttpClient and Post Header
 		    HttpClient httpclient = new DefaultHttpClient();
-		    HttpPost httppost = new HttpPost("http://192.168.1.101:8080/cgi-bin/devInit.pl");
+		    HttpPost httppost = new HttpPost("http://" + mRemoteServerAddr + "/cgi-bin/devInit.pl");
 		    TelephonyManager telMan = ((TelephonyManager)getSystemService(TELEPHONY_SERVICE));
 		    String deviceId = telMan.getDeviceId();
 		    String version = Build.VERSION.RELEASE;
@@ -478,6 +482,7 @@ public class policyList extends ListActivity {
             	postDeviceData();
             	
             	byte data[] = onDownloadPolicy();
+            	if(data == null) break;
             	OutputStream os;
         		File path = getExternalFilesDir(null);
         		File file = new File(path, REMOTE_FILE);
