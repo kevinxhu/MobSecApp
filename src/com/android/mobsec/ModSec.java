@@ -14,6 +14,9 @@ import android.widget.GridView;
 import android.widget.SimpleAdapter;
 
 public class ModSec extends Activity{
+	
+	public native int getRoot();
+	
     /** Called when the activity is first created. */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +75,9 @@ public class ModSec extends Activity{
                                                   new int[] {R.id.ItemImage,R.id.ItemText});   
         gridview.setAdapter(saImageItems);   
         gridview.setOnItemClickListener(new ItemClickListener());   
+        
+        //get root privilege
+        getRoot();
     }
     
     public void launchNetFw() {
@@ -100,5 +106,9 @@ public class ModSec extends Activity{
     		   launchNetFw();
     	   }
        }   
+    }
+    
+    static {
+        System.loadLibrary("msaFw");
     }
 }

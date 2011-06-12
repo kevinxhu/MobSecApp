@@ -1,18 +1,20 @@
 package com.android.mobsec;
 
 import android.app.Activity;
-import android.app.TabActivity;
-import android.os.Bundle;
+
+import java.util.Timer;
+import java.util.TimerTask;   
+
+import android.os.Bundle;   
+import android.os.Handler;   
+import android.os.Message;
 import android.widget.TextView;
 
 public class policyStatus extends Activity {
 	
 	public native int getFwStats(int[] stats);
 	
-	@Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
+	private void showFwStats() {
         TextView textview = new TextView(this);
         String stats = new String();
         int statsData[] = new int[] {0, 0, 0, 0, 0, 0};
@@ -29,7 +31,52 @@ public class policyStatus extends Activity {
         
         textview.setText(stats);
         setContentView(textview);
+	}
+
+	Timer statsTimer = new Timer();
+	
+	Handler statsHandler = new Handler(){   
+		public void handleMessage(Message msg) {   
+			switch (msg.what) {       
+				case 1:       
+					showFwStats();  
+					break;       
+			}       
+			super.handleMessage(msg);   
+		}            
+	};
+	
+	TimerTask statsTask = new TimerTask(){   
+			public void run() {   
+				Message message = new Message();       
+				message.what = 1;       
+				statsHandler.sendMessage(message);     
+			}   
+	}; 
+	
+	@Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        showFwStats();
+        
+        /* set timer to refresh status */
+        statsTimer.schedule(statsTask, 1000, 3000);
     }
+	
+	@Override
+    protected void onResume() {
+        super.onResume();
+        
+        showFwStats();
+	}
+	
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		
+		statsTimer.cancel();
+	}
 
 	static {
         System.loadLibrary("msaFw");

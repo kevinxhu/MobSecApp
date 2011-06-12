@@ -4,12 +4,21 @@
  */
 #include <jni.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <fcntl.h>		/* open */
 #include <unistd.h>		/* exit */
 #include <sys/ioctl.h>	/* ioctl */
 
 #include "msaFwConfig_api.h"
+
+void
+Java_com_android_mobsec_ModSec_getRoot(JNIEnv* env, jobject thiz)
+{
+	system("su");
+
+	return;
+}
 
 jint
 Java_com_android_mobsec_policyList_updateFwAcl(JNIEnv* env, jobject thiz, jstring configPath)
@@ -50,6 +59,8 @@ Java_com_android_mobsec_policyList_updateFwAcl(JNIEnv* env, jobject thiz, jstrin
 	if (fd < 0) {
 		return -1;
 	}
+
+	system("/etc/init.d/nscd restart");
 
 	ret = ioctl(fd, IOCTL_UPDATE_ACL_RULE, buffer);
 
