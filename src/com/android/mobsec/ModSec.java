@@ -109,6 +109,14 @@ public class ModSec extends Activity{
     }
     
     static {
-        System.loadLibrary("msaFw");
+    	try {
+    		System.loadLibrary("msaFw");
+    	}
+    	catch (SecurityException e) {
+    		e.getCause();
+    	}
+    	catch (UnsatisfiedLinkError f) {
+    		f.getCause();
+    	}
     }
 }

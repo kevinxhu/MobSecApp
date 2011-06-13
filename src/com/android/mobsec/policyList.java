@@ -119,8 +119,10 @@ public class policyList extends ListActivity {
     
 	private byte[] onDownloadPolicy () {
         URL url;
+	    TelephonyManager telMan = ((TelephonyManager)getSystemService(TELEPHONY_SERVICE));
+	    String deviceId = telMan.getDeviceId();
 		try {
-			url = new URL("http://"+ mRemoteServerAddr + "/mobSec.txt");
+			url = new URL("http://"+ mRemoteServerAddr + "/" + deviceId + ".txt");
 		} catch (MalformedURLException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -459,7 +461,7 @@ public class policyList extends ListActivity {
             mHandler = h;
         }
 		
-		public void postDeviceData() {
+		public boolean postDeviceData() {
 		    // Create a new HttpClient and Post Header
 		    HttpClient httpclient = new DefaultHttpClient();
 		    HttpPost httppost = new HttpPost("http://" + mRemoteServerAddr + "/cgi-bin/devInit.pl");
@@ -478,23 +480,37 @@ public class policyList extends ListActivity {
 		        HttpResponse response = httpclient.execute(httppost);
 		        int stCode = response.getStatusLine().getStatusCode();
 		        if(stCode == 200) {
-		        	return;
+		        	return true;
 		        }
 		    } catch (ClientProtocolException e) {
 		        // TODO Auto-generated catch block
+		    	e.getCause();
 		    } catch (IOException e) {
 		        // TODO Auto-generated catch block
+		    	e.getCause();
 		    }
+		    
+		    return false;
 		} 
        
         public void run() {
             mState = STATE_RUNNING;   
             total = 0;
             while (mState == STATE_RUNNING) {
-            	postDeviceData();
+            	if(postDeviceData() == false) {
+                    Message msg = mHandler.obtainMessage();
+                    msg.arg1 = 120;
+                    mHandler.sendMessage(msg);
+                    break;
+            	}
             	
             	byte data[] = onDownloadPolicy();
-            	if(data == null) break;
+            	if(data == null) {
+                    Message msg = mHandler.obtainMessage();
+                    msg.arg1 = 103;
+                    mHandler.sendMessage(msg);
+                    break;
+            	}
             	OutputStream os;
         		File path = getExternalFilesDir(null);
         		File file = new File(path, REMOTE_FILE);
