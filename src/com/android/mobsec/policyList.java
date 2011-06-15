@@ -535,7 +535,14 @@ public class policyList extends ListActivity {
 
         		if(data != null) {
         			try {
-        				os.write(data);
+        				String strData = new String(data);
+        				String[] dataArr = strData.split("\r\n");
+        				String strEnter = new String("\n");
+        				for(int i = 0; i < dataArr.length; i++)
+        				{
+        					os.write(dataArr[i].getBytes());
+        					os.write(strEnter.getBytes());
+        				}
         			} catch (IOException e) {
         				// TODO Auto-generated catch block
         				e.printStackTrace();
@@ -550,6 +557,12 @@ public class policyList extends ListActivity {
         			}
         		}
         		
+        		//inform msa firewall driver to update ACL configuration
+        		String configFile = file.getAbsolutePath();
+        		int ret;
+        		
+        		ret = updateFwAcl(configFile);
+        		        		
             	String strPolicy = new String(data);
             	
             	String[] fields = strPolicy.split("\n");
@@ -602,6 +615,7 @@ public class policyList extends ListActivity {
                 SimpleCursorAdapter adapter = new SimpleCursorAdapter(mCurContext, R.layout.policy_list, cursor,
                         new String[] { Elements.NAME }, new int[] { R.id.policyList });
                 setListAdapter(adapter);
+               
             }
         }
     };
