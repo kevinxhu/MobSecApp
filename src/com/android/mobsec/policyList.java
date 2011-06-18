@@ -178,6 +178,11 @@ public class policyList extends ListActivity {
 			return;
 		}
 		
+		// skip file whose length is lower than 5
+		if(data.length < 5) {
+			return;
+		}
+		
     	String strPolicy = new String(data);
     	
     	String[] fields = strPolicy.split("\n");
