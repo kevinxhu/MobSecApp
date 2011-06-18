@@ -505,7 +505,7 @@ public class policyList extends ListActivity {
             	}
             	
             	byte data[] = onDownloadPolicy();
-            	if(data == null) {
+            	if(data == null || data.length < 5) {
                     Message msg = mHandler.obtainMessage();
                     msg.arg1 = 103;
                     mHandler.sendMessage(msg);
@@ -535,6 +535,7 @@ public class policyList extends ListActivity {
 
         		if(data != null) {
         			try {
+        				// remove /r/n in each line
         				String strData = new String(data);
         				String[] dataArr = strData.split("\r\n");
         				String strEnter = new String("\n");
