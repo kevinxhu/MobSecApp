@@ -178,11 +178,10 @@ public class policyList extends ListActivity {
 			return;
 		}
 		
-		// skip file whose length is lower than 5
 		if(data.length < 5) {
 			return;
 		}
-		
+	
     	String strPolicy = new String(data);
     	
     	String[] fields = strPolicy.split("\n");
@@ -469,10 +468,15 @@ public class policyList extends ListActivity {
 		public boolean postDeviceData() {
 		    // Create a new HttpClient and Post Header
 		    HttpClient httpclient = new DefaultHttpClient();
+		    
 		    HttpPost httppost = new HttpPost("http://" + mRemoteServerAddr + "/cgi-bin/devInit.pl");
 		    TelephonyManager telMan = ((TelephonyManager)getSystemService(TELEPHONY_SERVICE));
 		    String deviceId = telMan.getDeviceId();
 		    String version = Build.VERSION.RELEASE;
+		    
+		    if(mRemoteServerAddr.length() <= 4) {
+		    	return false;
+		    }
 		    
 		    try {
 		        // Add your data
@@ -510,7 +514,7 @@ public class policyList extends ListActivity {
             	}
             	
             	byte data[] = onDownloadPolicy();
-            	if(data == null || data.length < 5) {
+            	if(data == null) {
                     Message msg = mHandler.obtainMessage();
                     msg.arg1 = 103;
                     mHandler.sendMessage(msg);
@@ -568,6 +572,13 @@ public class policyList extends ListActivity {
         		int ret;
         		
         		ret = updateFwAcl(configFile);
+        		
+        		if(data.length < 5) {
+                    Message msg = mHandler.obtainMessage();
+                    msg.arg1 = 103;
+                    mHandler.sendMessage(msg);
+                    break;
+        		}
         		        		
             	String strPolicy = new String(data);
             	

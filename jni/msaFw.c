@@ -52,6 +52,11 @@ Java_com_android_mobsec_policyList_updateFwAcl(JNIEnv* env, jobject thiz, jstrin
 
 	fclose(fs);
 
+	if(strlen(buffer) < 5)
+	{
+		buffer[0] = '\0';
+	}
+
 	/* open driver device to push configuration to MSA driver */
 	sprintf(devFileName, "/dev/%s%d", DEVICE_FILE_NAME, 0);
 
