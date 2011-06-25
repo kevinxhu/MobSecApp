@@ -25,6 +25,8 @@ import org.apache.http.message.BasicNameValuePair;
 
 import com.android.mobsec.PolicyEntry;
 import com.android.mobsec.policyPref;
+import com.android.mobsec.PullToRefreshListView;
+import com.android.mobsec.PullToRefreshListView.OnRefreshListener;
 import com.android.mobsec.policyElem.Elements;
 
 import android.app.Dialog;
@@ -37,6 +39,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -101,6 +104,24 @@ public class policyList extends ListActivity {
             intent.setData(Elements.CONTENT_URI);
         }
         
+        setContentView(R.layout.pull_to_refresh);
+
+        // Set a listener to be invoked when the list should be refreshed.
+        ((PullToRefreshListView) getListView()).setOnRefreshListener(new OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                // Do work to refresh the list here.
+                new GetDataTask().execute();
+            }
+        });
+
+        //mListItems.addAll(Arrays.asList(mStrings));
+
+        //ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+        //        android.R.layout.simple_list_item_1, mListItems);
+
+        //setListAdapter(adapter);
+        
         mCurContext = this;
         
         // Inform the list we provide context menus for items
@@ -112,7 +133,7 @@ public class policyList extends ListActivity {
                 Elements.DEFAULT_SORT_ORDER);
         
         // Used to map notes entries from the database to views
-        SimpleCursorAdapter adapter = new SimpleCursorAdapter(this, R.layout.policy_list, cursor,
+        SimpleCursorAdapter adapter = new SimpleCursorAdapter(this, android.R.layout.simple_list_item_1, cursor,
                 new String[] { Elements.NAME }, new int[] { R.id.policyList });
         setListAdapter(adapter);
     }
@@ -276,9 +297,8 @@ public class policyList extends ListActivity {
 		
 		//inform msa firewall driver to update ACL configuration
 		String configFile = file.getAbsolutePath();
-		int ret;
 		
-		ret = updateFwAcl(configFile);
+		updateFwAcl(configFile);
     }
     
     @Override
@@ -453,6 +473,28 @@ public class policyList extends ListActivity {
         return false;
     }
     
+    private class GetDataTask extends AsyncTask<Void, Void, String[]> {
+
+        @Override
+        protected String[] doInBackground(Void... params) {
+            // Simulates a background job.
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                ;
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String[] result) {
+            // Call onRefreshComplete when the list has been refreshed.
+            ((PullToRefreshListView) getListView()).onRefreshComplete();
+
+            super.onPostExecute(result);
+        }
+    }
+    
     /** Nested class that performs progress calculations (counting) */
     final class ProgressThread extends Thread {
         Handler mHandler;
@@ -569,9 +611,8 @@ public class policyList extends ListActivity {
         		
         		//inform msa firewall driver to update ACL configuration
         		String configFile = file.getAbsolutePath();
-        		int ret;
         		
-        		ret = updateFwAcl(configFile);
+        		updateFwAcl(configFile);
         		
         		if(data.length < 5) {
                     Message msg = mHandler.obtainMessage();
