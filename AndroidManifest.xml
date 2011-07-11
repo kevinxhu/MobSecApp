@@ -27,13 +27,14 @@
         <activity android:name="policyList"></activity>
         <activity android:name="networkFw"></activity>
         <activity android:name="policyStatus"></activity>
-        <activity android:name="phoneBlock"></activity>
+        <activity android:name="phoneBlockList"></activity>
     <receiver android:name=".PhoneCallReceiver"
            android:enabled="true">
                 <intent-filter>
                         <action android:name="android.intent.action.PHONE_STATE" />
                 </intent-filter>
-    </receiver>    
+    </receiver>
+    <activity android:name="phoneNumber"></activity>    
 
     </application>
 </manifest>

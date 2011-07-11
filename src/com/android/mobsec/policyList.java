@@ -108,7 +108,6 @@ public class policyList extends ListActivity {
 
         // Set a listener to be invoked when the list should be refreshed.
         ((PullToRefreshListView) getListView()).setOnRefreshListener(new OnRefreshListener() {
-            @Override
             public void onRefresh() {
                 // Do work to refresh the list here.
                 new GetDataTask().execute();

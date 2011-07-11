@@ -89,6 +89,18 @@ public class ModSec extends Activity{
 		   }
     	
     }
+    
+    public void launchPhoneList() {
+    	  try {
+    		  startActivity(new Intent(this, phoneBlockList.class));
+    	  }
+    	  catch (ActivityNotFoundException e) {
+    		  e.getCause();
+    	  }
+    	  catch (Exception e) {
+    		  e.getCause();
+    	  }
+    }
         
     class  ItemClickListener implements OnItemClickListener   
     {   
@@ -102,8 +114,13 @@ public class ModSec extends Activity{
    
     	   Object obj1 = item.get("ItemText");
     	   Object obj2 = getResources().getString(R.string.gridview1);
+    	   Object obj9 = getResources().getString(R.string.gridview8);
     	   if(obj1.equals(obj2)) {
     		   launchNetFw();
+    	   }
+    	   else if(obj1.equals(obj9))
+    	   {
+    		   launchPhoneList();
     	   }
        }   
     }

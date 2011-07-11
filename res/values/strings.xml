@@ -4,6 +4,7 @@
     <string name="app_name">MobSec</string>
     <string name="addPolicy">Add Polycy...</string>
     <string name="menu_add">增加策略</string>
+    <string name="menu_phone_add">增加号码</string>
     <string name="policyEntry">策略条目</string>
     <string name="txtIpAddr">IP地址</string>
     <string name="txtStdAction">动作</string>
@@ -61,5 +62,6 @@
     <string name="pull_to_refresh_release_label">Release to refresh...</string>
     <string name="pull_to_refresh_refreshing_label">Loading...</string>
     <string name="pull_to_refresh_tap_label">Tap to refresh...</string>
+    <string name="phonenumber">电话号码</string>
 
 </resources>
