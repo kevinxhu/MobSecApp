@@ -5,6 +5,7 @@
     <string name="addPolicy">Add Polycy...</string>
     <string name="menu_add">增加策略</string>
     <string name="menu_phone_add">增加号码</string>
+    <string name="menu_phone_del">删除号码</string>
     <string name="policyEntry">策略条目</string>
     <string name="txtIpAddr">IP地址</string>
     <string name="txtStdAction">动作</string>

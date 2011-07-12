@@ -36,8 +36,21 @@ public class PhoneCallReceiver extends BroadcastReceiver {
             String phoneNr= bundle.getString("incoming_number");        
             Log.v(TAG, "phoneNr: "+phoneNr);
             
-            telephonyService.silenceRinger();
-            telephonyService.endCall();
+            String[] phoneNumList = phoneBlockList.blockPhoneList;
+            int phoneLen = phoneNr.length();
+            for(int index = 0; index < phoneNumList.length; index++) {
+            	int numberLen = phoneNumList[index].length();
+            	if(numberLen <= 0) {
+            		continue;
+            	}
+            	String subPhone = phoneNr.substring(phoneLen - numberLen);
+            	if(subPhone.compareTo(phoneNumList[index]) == 0) {
+                    telephonyService.silenceRinger();
+                    telephonyService.endCall();
+                    Log.v(TAG, "call is blocked");
+                    break;
+            	}
+            }
         } 
         catch (Exception e) 
         {
